@@ -1,0 +1,7 @@
+BasedOnStyle: LLVM
+BinPackArguments: false
+BinPackParameters: false
+AllowShortFunctionsOnASingleLine: Empty
+IndentPPDirectives: AfterHash
+AlignOperands: Align
+AlignTrailingComments: true
