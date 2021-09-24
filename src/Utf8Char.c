@@ -35,7 +35,7 @@ char *NextUtf8CharPtr(char *cur) {
 const char *NextUtf8ConstCharPtr(const char *cur) {
   if (cur == NULL)
     return NULL;
-  if (cur[0] == '0')
+  if (cur[0] == '\0')
     return NULL;
 
   return cur + Utf8CharSize(cur[0]);
