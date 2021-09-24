@@ -522,6 +522,7 @@ static bool MatchHexInteger(struct SourceManager *srcMgr, struct Token *tok) {
     hasDigit = true;
   }
 
+  tok->kind = TOKEN_numeric_constant;
   if (!hasDigit || !MatchIntegerSuffix(srcMgr, tok)) {
     tok->source.size = srcMgr->cursor - tok->source.data;
     PrintLexError("invalid integer suffix", "invalid suffix", tok);
