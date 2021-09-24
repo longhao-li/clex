@@ -487,6 +487,7 @@ static bool MatchFloat(struct SourceManager *srcMgr, struct Token *tok) {
 }
 
 static bool IsValidIntegerSuffix(struct StringPiece suffix) {
+  // TODO implement this
   return true;
 }
 

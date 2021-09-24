@@ -1,5 +1,5 @@
 float valid_bug_maker[] = {
-  0.,
+  0.f,
   .1,
   1.2f,
   1.35F,
