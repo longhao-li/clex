@@ -421,29 +421,6 @@ static bool MatchCharConstant(struct SourceManager *srcMgr, struct Token *tok) {
       SourceManagerGetChar(srcMgr);
     }
   }
-
-  // while (SourceManagerCurrentChar(srcMgr).c[0] != '\0' &&
-  //        SourceManagerCurrentChar(srcMgr).c[0] != '\n' &&
-  //        SourceManagerCurrentChar(srcMgr).c[0] != '\'') {
-
-  //   Utf8Char c = SourceManagerCurrentChar(srcMgr);
-  //   SourceManagerGetChar(srcMgr);
-
-  //   if (c.c[0] == '\\')
-  //     SourceManagerGetChar(srcMgr);
-  // }
-
-  // if (SourceManagerCurrentChar(srcMgr).c[0] == '\'') {
-  //   SourceManagerGetChar(srcMgr);
-  //   tok->kind = TOKEN_char_constant;
-  //   tok->source.size = srcMgr->cursor - tok->source.data;
-  //   return true;
-  // } else {
-  //   assert(SourceManagerCurrentChar(srcMgr).c[0] == '\0' ||
-  //   SourceManagerCurrentChar(srcMgr).c[0] == '\n'); tok->source.size = 1;
-  //   PrintLexError("unterminated char constant", "char constant starts here",
-  //   tok); return false;
-  // }
 }
 
 static bool MatchWideCharConstant(struct SourceManager *srcMgr,
@@ -459,27 +436,25 @@ static bool MatchStringLiteral(struct SourceManager *srcMgr,
   assert(SourceManagerCurrentChar(srcMgr).c[0] == '\"');
   SourceManagerGetChar(srcMgr);
 
-  while (SourceManagerCurrentChar(srcMgr).c[0] != '\0' &&
-         SourceManagerCurrentChar(srcMgr).c[0] != '\n' &&
-         SourceManagerCurrentChar(srcMgr).c[0] != '\"') {
-
+  while (true) {
     Utf8Char c = SourceManagerCurrentChar(srcMgr);
     SourceManagerGetChar(srcMgr);
+    if (c.c[0] == '\0' || c.c[0] == '\n') {
+      tok->source.size = 1;
+      PrintLexError(
+          "unterminated string literal", "string starts here", tok);
+      return false;
+    }
 
-    if (c.c[0] == '\\')
+    if (c.c[0] == '\"') {
+      tok->kind = TOKEN_string_literal;
+      tok->source.size = srcMgr->cursor - tok->source.data;
+      return true;
+    }
+
+    if (c.c[0] == '\\') {
       SourceManagerGetChar(srcMgr);
-  }
-
-  if (SourceManagerCurrentChar(srcMgr).c[0] == '\"') {
-    SourceManagerGetChar(srcMgr);
-    tok->kind = TOKEN_string_literal;
-    tok->source.size = srcMgr->cursor - tok->source.data;
-    return true;
-  } else {
-    tok->source.size = 1;
-    PrintLexError(
-        "unterminated string literal", "string literal starts here", tok);
-    return false;
+    }
   }
 }
 
