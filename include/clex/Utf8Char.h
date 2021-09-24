@@ -35,6 +35,10 @@ static inline bool Utf8CharIsDigit(const Utf8Char c) {
   return isdigit(c.c[0]);
 }
 
+static inline bool Utf8CharIsXDigit(const Utf8Char c) {
+  return isxdigit(c.c[0]);
+}
+
 size_t Utf8CharSize(char c);
 
 static inline bool Utf8CharIsMultiByte(const Utf8Char c) {

@@ -1,0 +1,16 @@
+float valid_bug_maker[] = {
+  0.,
+  .1,
+  1.2f,
+  1.35F,
+  0.e7f,
+  .999e0F,
+  -0.2323E-0f,
+};
+
+float invalid_bug_maker[] = {
+  0.a,
+  1.-5,
+  .987e-,
+  0.233e0x7f,
+};

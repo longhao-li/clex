@@ -99,12 +99,12 @@ bool GetToken(struct SourceManager *srcMgr, struct Token *tok) {
     return MatchPunctuator(srcMgr, tok);
 
   default:
-    if (IsIdentifierOrKeywordUtf8Char(c))
-      return MatchIdentifierOrKeyword(srcMgr, tok);
-    else if (Utf8CharIsPunct(c))
+    if (Utf8CharIsPunct(c))
       return MatchPunctuator(srcMgr, tok);
     else if (Utf8CharIsDigit(c))
       return MatchNumericConstant(srcMgr, tok);
+    else if (IsIdentifierOrKeywordUtf8Char(c))
+      return MatchIdentifierOrKeyword(srcMgr, tok);
     else {
       tok->source.size = Utf8CharSize(c.c[0]);
       PrintLexError("unexpected character", "unrecognized character", tok);
@@ -391,10 +391,190 @@ static bool MatchPunctuator(struct SourceManager *srcMgr, struct Token *tok) {
   return true;
 }
 
+static bool MatchOctInteger(struct SourceManager *srcMgr, struct Token *tok) {
+  bool hasOverflow = false;
+
+  while (true) {
+    Utf8Char c = SourceManagerCurrentChar(srcMgr);
+    if (!Utf8CharIsDigit(c))
+      break;
+
+    if (c.c[0] > '7')
+      hasOverflow = true;
+    SourceManagerGetChar(srcMgr);
+  }
+
+  tok->kind = TOKEN_numeric_constant;
+  tok->source.size = srcMgr->cursor - tok->source.data;
+  if (hasOverflow) {
+    PrintLexError("invalid digit in octal constant", "digit too big", tok);
+    return false;
+  } else {
+    return true;
+  }
+}
+
+static bool MatchFloatSuffix(struct SourceManager *srcMgr, struct Token *tok) {
+  Utf8Char c = UTF8_0;
+  struct StringPiece suffix = (struct StringPiece){srcMgr->cursor, 0};
+
+  while (true) {
+    c = SourceManagerCurrentChar(srcMgr);
+    if (!Utf8CharIsAlpha(c))
+      break;
+    SourceManagerGetChar(srcMgr);
+  }
+
+  suffix.size = srcMgr->cursor - suffix.data;
+  if (suffix.size == 0)
+    return true;
+  if (suffix.size == 1 && (suffix.data[0] == 'f' || suffix.data[0] == 'F'))
+    return true;
+  return false;
+}
+
+static bool MatchFloatIndex(struct SourceManager *srcMgr, struct Token *tok) {
+  Utf8Char c = SourceManagerGetChar(srcMgr);
+  assert(c.c[0] == 'e' || c.c[0] == 'E');
+
+  bool hasIndex = false;
+  if (SourceManagerCurrentChar(srcMgr).c[0] == '-')
+    SourceManagerGetChar(srcMgr);
+
+  while (true) {
+    c = SourceManagerCurrentChar(srcMgr);
+    if (!Utf8CharIsDigit(c))
+      break;
+
+    SourceManagerGetChar(srcMgr);
+    hasIndex = true;
+  }
+
+  tok->kind = TOKEN_numeric_constant;
+  if (!MatchFloatSuffix(srcMgr, tok) || !hasIndex) {
+    tok->source.size = srcMgr->cursor - tok->source.data;
+    PrintLexError("invalid float suffix", "invalid suffix", tok);
+    return false;
+  }
+  tok->source.size = srcMgr->cursor - tok->source.data;
+  return true;
+}
+
+static bool MatchFloat(struct SourceManager *srcMgr, struct Token *tok) {
+  Utf8Char c = SourceManagerGetChar(srcMgr);
+  assert(c.c[0] == '.');
+  while (true) {
+    c = SourceManagerCurrentChar(srcMgr);
+    if (!Utf8CharIsDigit(c))
+      break;
+    SourceManagerGetChar(srcMgr);
+  }
+
+  c = SourceManagerCurrentChar(srcMgr);
+
+  if (c.c[0] == 'e' || c.c[0] == 'E')
+    return MatchFloatIndex(srcMgr, tok);
+
+  tok->kind = TOKEN_numeric_constant;
+  if (!MatchFloatSuffix(srcMgr, tok)) {
+    tok->source.size = srcMgr->cursor - tok->source.data;
+    PrintLexError("invalid float suffix", "invalid suffix", tok);
+    return false;
+  }
+
+  tok->source.size = srcMgr->cursor - tok->source.data;
+  return true;
+}
+
+static bool IsValidIntegerSuffix(struct StringPiece suffix) {
+  return true;
+}
+
+static bool MatchIntegerSuffix(struct SourceManager *srcMgr,
+                               struct Token *tok) {
+  Utf8Char c = UTF8_0;
+  struct StringPiece suffix = (struct StringPiece){srcMgr->cursor, 0};
+
+  while (true) {
+    c = SourceManagerCurrentChar(srcMgr);
+    if (!Utf8CharIsAlpha(c))
+      break;
+    SourceManagerGetChar(srcMgr);
+  }
+
+  suffix.size = srcMgr->cursor - suffix.data;
+  return IsValidIntegerSuffix(suffix);
+}
+
+static bool MatchHexInteger(struct SourceManager *srcMgr, struct Token *tok) {
+  assert(srcMgr->cursor[0] == '0' &&
+         (srcMgr->cursor[1] == 'X' || srcMgr->cursor[1] == 'x'));
+  SourceManagerGetChar(srcMgr);
+  SourceManagerGetChar(srcMgr);
+
+  bool hasDigit = false;
+  Utf8Char c = UTF8_0;
+  while (true) {
+    c = SourceManagerCurrentChar(srcMgr);
+    if (!Utf8CharIsXDigit(c))
+      break;
+    SourceManagerGetChar(srcMgr);
+    hasDigit = true;
+  }
+
+  if (!hasDigit || !MatchIntegerSuffix(srcMgr, tok)) {
+    tok->source.size = srcMgr->cursor - tok->source.data;
+    PrintLexError("invalid integer suffix", "invalid suffix", tok);
+    return false;
+  }
+
+  tok->source.size = srcMgr->cursor - tok->source.data;
+  return true;
+}
+
+static bool MatchIntegerOrFloat(struct SourceManager *srcMgr,
+                                struct Token *tok) {
+  Utf8Char c = UTF8_0;
+  while (true) {
+    c = SourceManagerCurrentChar(srcMgr);
+    if (!Utf8CharIsDigit(c))
+      break;
+    SourceManagerGetChar(srcMgr);
+  }
+
+  c = SourceManagerCurrentChar(srcMgr);
+  if (c.c[0] == '.')
+    return MatchFloat(srcMgr, tok);
+  else if (c.c[0] == 'e' || c.c[0] == 'E')
+    return MatchFloatIndex(srcMgr, tok);
+
+  // is oct integer
+  tok->kind = TOKEN_numeric_constant;
+  if (!MatchIntegerSuffix(srcMgr, tok)) {
+    tok->source.size = srcMgr->cursor - tok->source.data;
+    PrintLexError("invalid integer suffix", "invalid suffix", tok);
+    return false;
+  }
+
+  tok->source.size = srcMgr->cursor - tok->source.data;
+  return true;
+}
+
 static bool MatchNumericConstant(struct SourceManager *srcMgr,
                                  struct Token *tok) {
-  // TODO implement this
-  return true;
+  char c = srcMgr->cursor[0];
+  assert(c != '\0');
+
+  if (c == '0') {
+    if (SourceManagerIsValidCursor(srcMgr, srcMgr->cursor + 1)) {
+      char c1 = srcMgr->cursor[1];
+      if (c1 == 'x' || c1 == 'X')
+        return MatchHexInteger(srcMgr, tok);
+      if (isdigit(c1))
+        return MatchOctInteger(srcMgr, tok);
+    }
+  }
+  return MatchIntegerOrFloat(srcMgr, tok);
 }
 
 static bool MatchCharConstant(struct SourceManager *srcMgr, struct Token *tok) {
@@ -441,8 +621,7 @@ static bool MatchStringLiteral(struct SourceManager *srcMgr,
     SourceManagerGetChar(srcMgr);
     if (c.c[0] == '\0' || c.c[0] == '\n') {
       tok->source.size = 1;
-      PrintLexError(
-          "unterminated string literal", "string starts here", tok);
+      PrintLexError("unterminated string literal", "string starts here", tok);
       return false;
     }
 
