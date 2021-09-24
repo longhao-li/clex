@@ -1,7 +1,15 @@
 #include "clex/Error.h"
 #include "clex/File.h"
+#include "clex/Lexer.h"
+#include "clex/TokenKinds.h"
 
 #include <stdio.h>
+
+static inline void PrintToken(const struct Token *tok) {
+  printf("[TokenKind: %s, Source: ", GetTokenName(tok->kind));
+  PrintStringPiece(tok->source);
+  printf("]\n");
+}
 
 int main(int argc, char **argv) {
   if (argc < 2) {
@@ -11,16 +19,18 @@ int main(int argc, char **argv) {
 
   struct String *source = ReadFileToString(argv[1]);
   if (source) {
-    printf("%s\n", source->data);
-
     struct Token tok;
-    tok.source = (struct StringPiece){source->data + 10, 10};
-    tok.startOfLine = source->data;
-    tok.row = 1;
-    tok.col = 11;
-    tok.kind = TOKEN_unknown;
+    struct SourceManager *srcMgr =
+        CreateSourceManager(StringPieceFromString(source));
 
-    PrintLexError("Unknown error", "This is error info", &tok);
+    while (true) {
+      bool res = GetToken(srcMgr, &tok);
+      if (!res)
+        continue;
+      if (tok.kind == TOKEN_eof)
+        break;
+      PrintToken(&tok);
+    }
   }
   return 0;
 }

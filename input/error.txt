@@ -1,0 +1,18 @@
+const char *const unclosed_string_literal = "This is a \\ \
+unclosed string literal
+
+// Unexpected character
+auto unexpected_char = $fake_variable##unclosed_string_literal;
+
+  /*
+  * /*
+  * This is an unclosed char constant
+  */
+  const char tri = '?008\'
+
+        /***
+          This is an unclosed block comment.
+          //***
+          *
+          
+      

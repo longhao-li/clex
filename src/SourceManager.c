@@ -44,10 +44,13 @@ Utf8Char SourceManagerGetChar(struct SourceManager *srcMgr) {
     } else {
       srcMgr->col += 1;
     }
-    
+
     srcMgr->numOfChar += 1;
     return u8c;
   } else {
+#ifdef DEBUG
+    printf("Getchar: NULL\n");
+#endif
     return UTF8_0;
   }
 }
