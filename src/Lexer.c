@@ -245,11 +245,11 @@ static bool MatchPunctuator(struct SourceManager *srcMgr, struct Token *tok) {
       SourceManagerGetChar(srcMgr);
       tok->kind = TOKEN_minusequal;
       tok->source.size = 2;
-    } else if (SourceManagerCurrentChar(srcMgr).c[0] == '+') {
+    } else if (SourceManagerCurrentChar(srcMgr).c[0] == '-') {
       SourceManagerGetChar(srcMgr);
       tok->kind = TOKEN_minusminus;
       tok->source.size = 2;
-    } else if (SourceManagerCurrentChar(srcMgr).c[0] == '+') {
+    } else if (SourceManagerCurrentChar(srcMgr).c[0] == '>') {
       SourceManagerGetChar(srcMgr);
       tok->kind = TOKEN_arrow;
       tok->source.size = 2;
@@ -338,7 +338,7 @@ static bool MatchPunctuator(struct SourceManager *srcMgr, struct Token *tok) {
       SourceManagerGetChar(srcMgr);
       tok->kind = TOKEN_pipeequal;
       tok->source.size = 2;
-    } else if (SourceManagerCurrentChar(srcMgr).c[0] == '&') {
+    } else if (SourceManagerCurrentChar(srcMgr).c[0] == '|') {
       SourceManagerGetChar(srcMgr);
       tok->kind = TOKEN_pipepipe;
       tok->source.size = 2;
