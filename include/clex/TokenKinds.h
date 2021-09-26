@@ -4,7 +4,7 @@
 #include "clex/Bool.h"
 #include "clex/StringPiece.h"
 
-enum : unsigned short {
+enum {
   KEYC99 = 0x1,
   KEYC11 = 0x2,
   KEYC17 = 0x4,
@@ -12,7 +12,7 @@ enum : unsigned short {
   KEYALL = KEYC99 | KEYC11 | KEYC17 | KEYC23,
 };
 
-enum TokenKind : unsigned short {
+enum TokenKind {
 #define TOK(X) TOKEN_##X,
 #include "clex/TokenKinds.def"
   TOKEN_NUM_TOKENS

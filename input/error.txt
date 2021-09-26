@@ -1,12 +1,6 @@
-auto var = $;    // unexpected character
-int “ = L'“';    // valid defination
-long oct = 09;   // invalid digit
-float f = .235U; // invalid float suffix
-char terminated_char = '\?001\
-';               // terminated char
-char unterminated_char = 'c; // unterminated char 
-const char *terminated_string_literal = "This is terminated \
-string literal."; // terminated string literal
-const char *unterminated_string_literal = "unterminated string literal \";
+$     // unexpected character
+09    // invalid digit
+.235U // invalid float suffix
+'c    // unterminated char  "unterminated string literal \";
 
 /** unclosed block block *******
