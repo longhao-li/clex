@@ -26,7 +26,7 @@ static bool MatchIdentifierOrKeyword(struct SourceManager *srcMgr,
                                      struct Token *tok);
 
 static inline bool IsIdentifierOrKeywordUtf8Char(Utf8Char c) {
-  return Utf8CharIsAlnum(c) || c.c[0] == '_' || Utf8CharIsMultiByte(c);
+  return (Utf8CharIsAlnum(c) || c.c[0] == '_' || Utf8CharIsMultiByte(c));
 }
 
 bool GetToken(struct SourceManager *srcMgr, struct Token *tok) {
@@ -48,9 +48,10 @@ bool GetToken(struct SourceManager *srcMgr, struct Token *tok) {
 
     if (c.c[0] == '/') {
       if (SourceManagerIsValidCursor(srcMgr, srcMgr->cursor + 1)) {
-        if (srcMgr->cursor[1] == '/')
+        if (srcMgr->cursor[1] == '/') {
           SkipLineComment(srcMgr);
-        else if (srcMgr->cursor[1] == '*') {
+          continue;
+        } else if (srcMgr->cursor[1] == '*') {
           bool res = SkipBlockComment(srcMgr, tok);
           if (!res) // unclosed block comment.
             return res;
@@ -99,12 +100,12 @@ bool GetToken(struct SourceManager *srcMgr, struct Token *tok) {
     return MatchPunctuator(srcMgr, tok);
 
   default:
-    if (Utf8CharIsPunct(c))
-      return MatchPunctuator(srcMgr, tok);
-    else if (Utf8CharIsDigit(c))
+    if (Utf8CharIsDigit(c))
       return MatchNumericConstant(srcMgr, tok);
     else if (IsIdentifierOrKeywordUtf8Char(c))
       return MatchIdentifierOrKeyword(srcMgr, tok);
+    else if (Utf8CharIsPunct(c))
+      return MatchPunctuator(srcMgr, tok);
     else {
       tok->source.size = Utf8CharSize(c.c[0]);
       PrintLexError("unexpected character", "unrecognized character", tok);
