@@ -48,9 +48,6 @@ Utf8Char SourceManagerGetChar(struct SourceManager *srcMgr) {
     srcMgr->numOfChar += 1;
     return u8c;
   } else {
-#ifdef DEBUG
-    printf("Getchar: NULL\n");
-#endif
     return UTF8_0;
   }
 }

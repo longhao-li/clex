@@ -11,7 +11,7 @@ void PrintLexError(const char *errSummary,
                    const struct Token *tok);
 
 static inline void SysError(const char *errMsg) {
-  printf("\e[1m\033[31merror: \e[0m\033[0m%s\n", errMsg);
+  printf("\e[1m\033[31merror: \033[1;37m%s\033[0m\e[0m\n", errMsg);
 }
 
 #endif // CLEX_ERROR_H

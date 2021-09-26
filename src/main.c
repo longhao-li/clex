@@ -14,7 +14,7 @@ static inline void PrintToken(const struct Token *tok) {
   printf("]\n");
 }
 
-static inline void ParseFile(const char *filename) {
+static void ParseFile(const char *filename) {
   CurrentFileName = filename;
   struct String *source = ReadFileToString(filename);
 
@@ -50,7 +50,7 @@ static inline void ParseFile(const char *filename) {
 
 int main(int argc, char **argv) {
   if (argc < 2) {
-    SysError("Expect at least one input file.");
+    SysError("no input file");
     return 0;
   }
 
