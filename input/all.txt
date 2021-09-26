@@ -1,0 +1,143 @@
+// This is line comment
+/**
+ * auther: 李隆昊
+ * This is block comment
+ */
+
+// below are punctuators
+[
+]
+(
+)
+{
+}
+.
+...
+&
+&&
+&=
+*
+*=
++
+++
++=
+-
+->
+--
+-=
+~
+!
+!=
+/
+/=
+%
+%=
+<
+<<
+<<=
+>
+>>
+>>=
+^
+^=
+|
+||
+|=
+?
+:
+;
+=
+==
+,
+#
+##
+#@
+
+// below are keywords
+auto
+break
+case
+char
+const
+continue
+default
+do
+double
+else
+enum
+extern
+float
+for
+goto
+if
+inline
+int
+long
+register
+restrict
+return
+short
+signed
+sizeof
+static
+struct
+switch
+typedef
+union
+unsigned
+void
+volatile
+while
+_Alignas
+_Alignof
+_Atomic
+_Bool
+_Complex
+_Generic
+_Imaginary
+_Noreturn
+_Static_assert
+_Thread_local
+asm
+fortran
+
+// integer types
+0
+123321Ui
+23333333333333333333333333333333333333333333333333333333333333ull
+0x7f7f7f7f7f7f7f7f7f7f7f7f7fffff
+
+// invalid integer
+0x
+
+// valid float
+0.f
+.1
+1.2f
+1.35F
+0.e7f
+.999e0F
+-0.2323E-0f
+
+// invalid float
+0.a,
+.1ff
+.987e-,
+0.233e0x7f,
+
+你好，世界！
+const char *🐍 = "🐶";
+
+auto var = $;    // unexpected character
+int “ = L'“';    // valid defination
+long oct = 09;   // invalid digit
+float f = .235U; // invalid float suffix
+char terminated_char = '\?001\
+';               // terminated char
+char unterminated_char = 'c; // unterminated char 
+const char *terminated_string_literal = "This is terminated \
+string literal."; // terminated string literal
+const char *unterminated_string_literal = "unterminated string literal \";
+
+/** unclosed block block **
+********
