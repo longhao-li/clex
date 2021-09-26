@@ -5,14 +5,14 @@ extern const char *CurrentFileName;
 void PrintLexError(const char *errSummary,
                    const char *errInfo,
                    const struct Token *tok) {
-  printf("\e[1m"           // bold
-         "\033[1;37m"      // white
-         "%s:%zu:%zu: "    // filename:line:column
-         "\033[31m"        // red
-         "error: "         // error:
-         "\033[1;37m"      // white
-         "%s"              // errSummary
-         "\033[0m\e[0m\n", // default
+  printf(PRINT_EMPHYSISE                            // bold
+             PRINT_COLOR_WHITE                      // white
+         "%s:%zu:%zu: "                             // filename:line:column
+         PRINT_COLOR_RED                            // red
+         "error: "                                  // error:
+         PRINT_COLOR_WHITE                          // white
+         "%s\n"                                     // errSummary
+         PRINT_UNSET_EMPHYSISE PRINT_COLOR_DEFAULT, // default
          CurrentFileName,
          tok->row,
          tok->col,
@@ -27,9 +27,9 @@ void PrintLexError(const char *errSummary,
   for (size_t i = 0; i < tok->source.data - tok->startOfLine; i++)
     putchar(' ');
   // bold, color
-  printf("\e[1m\033[32m");
+  printf(PRINT_EMPHYSISE PRINT_COLOR_GREEN);
   for (size_t i = 0; i < tok->source.size; i++)
     putchar('^');
   printf("%s\n", errInfo);
-  printf("\e[0m\033[0m");
+  printf(PRINT_UNSET_EMPHYSISE PRINT_COLOR_DEFAULT);
 }
