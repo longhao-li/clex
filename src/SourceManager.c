@@ -45,7 +45,8 @@ Utf8Char SourceManagerGetChar(struct SourceManager *srcMgr) {
       srcMgr->col += 1;
     }
 
-    srcMgr->numOfChar += 1;
+    if (!Utf8CharIsSpace(u8c))
+      srcMgr->numOfChar += 1;
     return u8c;
   } else {
     return UTF8_0;
