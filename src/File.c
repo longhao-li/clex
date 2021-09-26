@@ -5,8 +5,11 @@
 #include <stdint.h>
 
 static void SysFileError(const char *errMsg, const char *filename) {
-  printf(
-      "\e[1m\033[31merror: \033[1;37m%s: %s\033[0m\e[0m\n", errMsg, filename);
+  printf(PRINT_EMPHYSISE PRINT_COLOR_RED
+         "error: " PRINT_COLOR_WHITE
+         "%s: %s" PRINT_UNSET_EMPHYSISE PRINT_COLOR_DEFAULT "\n",
+         errMsg,
+         filename);
 }
 
 #if defined(__linux__) || defined(unix) || defined(__APPLE__)
