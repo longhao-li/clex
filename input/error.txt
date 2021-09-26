@@ -1,25 +1,12 @@
-const char *const unclosed_string_literal = "This is a \\ \
-unclosed string literal
+auto var = $;    // unexpected character
+int “ = L'“';    // valid defination
+long oct = 09;   // invalid digit
+float f = .235U; // invalid float suffix
+char terminated_char = '\?001\
+';               // terminated char
+char unterminated_char = 'c; // unterminated char 
+const char *terminated_string_literal = "This is terminated \
+string literal."; // terminated string literal
+const char *unterminated_string_literal = "unterminated string literal \";
 
-int c = 019;
-123321
-long hex_int = 0x0;
-0.123
-
-float bug_maker = .23;
-
-// Unexpected character
-auto unexpected_char = $fake_variable##unclosed_string_literal;
-
-  /*
-  * /*
-  * This is an unclosed char constant
-  */
-  const char tri = '?008\''
-
-        /***
-          This is an unclosed block comment.
-          //***
-          *
-          
-      
+/** unclosed block block *******

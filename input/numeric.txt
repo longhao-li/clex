@@ -1,16 +1,24 @@
-float valid_bug_maker[] = {
-  0.f,
-  .1,
-  1.2f,
-  1.35F,
-  0.e7f,
-  .999e0F,
-  -0.2323E-0f,
-};
+// integer types
+0
+123321Ui
+23333333333333333333333333333333333333333333333333333333333333ull
+0x7f7f7f7f7f7f7f7f7f7f7f7f7fffff
 
-float invalid_bug_maker[] = {
-  0.a,
-  1.-5,
-  .987e-,
-  0.233e0x7f,
-};
+// invalid integer
+0x
+
+// valid float
+0.f
+.1
+1.2f
+1.35F
+0.e7f
+.999e0F
+-0.2323E-0f
+
+// invalid float
+0.a,
+.1ff
+.987e-,
+0.233e0x7f,
+
