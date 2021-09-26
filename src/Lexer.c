@@ -611,7 +611,10 @@ static bool MatchWideCharConstant(struct SourceManager *srcMgr,
   assert(SourceManagerCurrentChar(srcMgr).c[0] == 'L');
   SourceManagerGetChar(srcMgr);
   assert(SourceManagerCurrentChar(srcMgr).c[0] == '\'');
-  return MatchCharConstant(srcMgr, tok);
+  bool res = MatchCharConstant(srcMgr, tok);
+  if (res)
+    tok->kind = TOKEN_wide_char_constant;
+  return res;
 }
 
 static bool MatchStringLiteral(struct SourceManager *srcMgr,
@@ -645,7 +648,10 @@ static bool MatchWideStringLiteral(struct SourceManager *srcMgr,
   assert(SourceManagerCurrentChar(srcMgr).c[0] == 'L');
   SourceManagerGetChar(srcMgr);
   assert(SourceManagerCurrentChar(srcMgr).c[0] == '\"');
-  return MatchStringLiteral(srcMgr, tok);
+  bool res = MatchStringLiteral(srcMgr, tok);
+  if (res)
+    tok->kind = TOKEN_wide_string_literal;
+  return res;
 }
 
 static bool MatchIdentifierOrKeyword(struct SourceManager *srcMgr,
